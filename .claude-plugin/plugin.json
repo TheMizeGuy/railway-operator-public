@@ -1,0 +1,20 @@
+{
+  "name": "railway-operator",
+  "version": "0.1.0",
+  "description": "Claude Code plugin that dispatches an Opus 4.6 agent to execute any Railway infrastructure task end-to-end. CLI-first, GraphQL when the CLI lacks a mutation, Playwright against the dashboard for UI-only actions. Applies known Railway gotchas automatically, verifies after every mutation, and returns structured reports.",
+  "author": {
+    "name": "mize"
+  },
+  "keywords": [
+    "railway",
+    "deploy",
+    "infrastructure",
+    "devops",
+    "hosting",
+    "deployment",
+    "database",
+    "railway-cli",
+    "graphql",
+    "playwright"
+  ]
+}
