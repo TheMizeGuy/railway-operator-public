@@ -1,20 +1,19 @@
 {
   "name": "railway-operator",
-  "version": "0.1.0",
-  "description": "Claude Code plugin that dispatches an Opus 4.6 agent to execute any Railway infrastructure task end-to-end. CLI-first, GraphQL when the CLI lacks a mutation, Playwright against the dashboard for UI-only actions. Applies known Railway gotchas automatically, verifies after every mutation, and returns structured reports.",
+  "version": "0.1.1",
+  "description": "Autonomous Railway operator, running on the session model (always the strongest available Claude), that executes any Railway task end-to-end. CLI-first (all 34 subcommands plus GraphQL when the CLI lacks a mutation), Playwright-second (falls back to the railway.com dashboard for UI-only actions and prompts you to sign in when needed). Applies well-known Railway gotchas (volume-add-no-redeploy, PGDATA subdirectory, IPv6 private DNS, Cloudflare SSL Flexible loop, RAILWAY_START_COMMAND Railpack-only, SSH arg re-tokenization) automatically and verifies every mutation. Can cite a local Railway knowledge base and GoodMem Learnings if you have them configured.",
   "author": {
-    "name": "mize"
+    "name": "TheMizeGuy",
+    "email": "ben@meipath.com"
   },
   "keywords": [
     "railway",
-    "deploy",
+    "railway-cli",
+    "deployment",
     "infrastructure",
     "devops",
-    "hosting",
-    "deployment",
-    "database",
-    "railway-cli",
-    "graphql",
-    "playwright"
+    "automation",
+    "playwright",
+    "graphql"
   ]
 }

@@ -1,16 +1,16 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "railway-operator-public",
-  "description": "Marketplace for the railway-operator plugin: Opus 4.6 Railway infrastructure agent for Claude Code.",
+  "description": "Marketplace for the railway-operator plugin: a Railway infrastructure agent for Claude Code, running on the session model (always the strongest available Claude).",
   "owner": {
-    "name": "mize"
+    "name": "TheMizeGuy"
   },
   "plugins": [
     {
       "name": "railway-operator",
-      "description": "Opus 4.6 Railway infrastructure agent. CLI-first, GraphQL when needed, Playwright for dashboard-only actions. 17 built-in gotchas, verification after every mutation, destructive-action guardrails.",
+      "description": "Railway infrastructure agent running on the session model. CLI-first, GraphQL when needed, Playwright for dashboard-only actions. 18 built-in gotchas, verification after every mutation, destructive-action guardrails.",
       "source": "./railway-operator",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "infrastructure",
       "homepage": "https://github.com/TheMizeGuy/railway-operator-public"
     }
