@@ -36,7 +36,7 @@ For purely dashboard / UI tasks (anything that clearly has no CLI surface — we
 
 If the task clearly falls in a specific Railway area and you maintain a local vault, you can pre-read the matching vault file to include relevant excerpts in the brief. In most cases, leave this to the agent.
 
-Useful pre-reads only for (if a vault exists at `~/Claude/vault/Railway/` or similar):
+Useful pre-reads only for (if a vault exists at `<your vault>/Railway/` or similar):
 - **Dashboard-only task** → glance at `12 - Web UI Navigation.md` to pre-identify the URL path the agent should navigate to
 - **Destructive task** (delete project, wipe data, etc.) → read `16 - Gotchas and Best Practices.md` §"Destructive-action guardrails" so you can call that out explicitly
 
