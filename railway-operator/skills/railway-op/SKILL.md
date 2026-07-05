@@ -87,7 +87,7 @@ Use the `Agent` tool:
 ```
 Agent(
   subagent_type: "railway-operator:railway-operator",
-  description: "<terse task summary — e.g. 'Deploy BootyBayBroker-Dev'>",
+  description: "<terse task summary — e.g. 'Deploy my-api staging'>",
   prompt: <the brief from Step 4>
   // omit model — the agent inherits the session model
 )
