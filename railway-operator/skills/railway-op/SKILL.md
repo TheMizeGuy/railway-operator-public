@@ -1,7 +1,7 @@
 ---
 name: railway-op
 description: |-
-  Use this skill when the user wants to do anything on Railway — deploy a service, check logs, wire a database, set environment variables, add a domain, fix a broken deployment, restore a backup, rename a service, configure a webhook, enable PR deploys, view audit logs, or literally any other Railway infrastructure action. Triggers on natural-language requests ("deploy this to Railway", "check my Railway logs", "my Railway service is down", "add a custom domain on Railway", "set up a Railway webhook to Slack", "what's running on Railway") and on explicit slash invocation. Dispatches the railway-operator:railway-operator agent (running on the session model, maximum effort) which executes the task end-to-end — CLI first, GraphQL when the CLI can't, Playwright against the dashboard when the action is UI-only. Prompts the user to sign in to the browser when needed.
+  Use this skill when the user wants to do anything on Railway — deploy a service, check logs, wire a database, set environment variables, add a domain, fix a broken deployment, restore a backup, rename a service, configure a webhook, enable PR deploys, view audit logs, or literally any other Railway infrastructure action. Triggers on natural-language requests ("deploy this to Railway", "check my Railway logs", "my Railway service is down", "add a custom domain on Railway", "set up a Railway webhook to Slack", "what's running on Railway") and on explicit slash invocation. Dispatches the railway-operator:railway-operator agent (running on the session model, maximum effort) which executes the task end-to-end — CLI first, GraphQL when the CLI can't, Playwright against the dashboard when the action is UI-only. Uses an operator-supplied Railway token when available and never initiates login or reuses credentials without explicit approval.
 argument-hint: '[natural-language task — e.g. "deploy this", "add a custom domain for api.example.com", "enable PR deploys", "fix the 502 on backend"]'
 allowed-tools: Bash, Read, Grep, Glob, TodoWrite, Agent
 ---
@@ -11,6 +11,13 @@ allowed-tools: Bash, Read, Grep, Glob, TodoWrite, Agent
 You are the orchestrator for the Railway Operator agent. Your job: gather Railway + project context, then dispatch the `railway-operator:railway-operator` agent (running on the session model — always the strongest available Claude) with a self-contained prompt. The agent does the actual work.
 
 Do NOT execute railway commands yourself beyond context-gathering. The agent is the executor — your only job is to brief it well.
+
+## Authentication safety
+
+Prefer an existing `RAILWAY_API_TOKEN` or `RAILWAY_TOKEN` supplied by the operator. Never print the
+token, mine a token from `~/.railway/config.json`, initiate `railway login` or browser OAuth, or reuse
+an existing credential for a new integration without explicit owner approval. If `railway whoami`
+fails, report the state and ask the owner how authentication should be repaired.
 
 ## Step 1 — Capture the task
 
@@ -28,7 +35,7 @@ Collect these in a single message with parallel tool calls so the agent gets a r
 4. **Project type hints** — Glob for `package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Dockerfile`, `railway.toml`, `railway.json` (these inform build strategy)
 5. **Existing Railway configuration** — Read `railway.toml` or `railway.json` if one exists at the repo root
 
-If `railway status --json` reports "not linked", don't treat that as an error — the agent will handle linking. If `railway whoami` reports not authenticated, include that fact in the brief; the agent will run `railway login --browserless` and wait for the user to paste the code.
+If `railway status --json` reports "not linked", don't treat that as an error — the agent will handle linking. If `railway whoami` reports not authenticated, include that fact in the brief and state whether a supported Railway token variable is set without printing its value. The agent must not start a login flow without explicit owner approval.
 
 For purely dashboard / UI tasks (anything that clearly has no CLI surface — webhooks, audit logs, billing, member management), context gathering can be minimal. Still capture `railway whoami` + the workspace list so the agent knows which account to drive in Playwright.
 
@@ -60,7 +67,7 @@ PROJECT CONTEXT:
 - Has railway.toml or railway.json: <yes/no; include contents if yes>
 
 RAILWAY CONTEXT:
-- Authenticated: <yes/no — if no, agent must run `railway login --browserless`>
+- Authenticated: <yes/no — if no, report whether a Railway token variable is set; never print it or start a login flow without explicit approval>
 - Account email: <from whoami>
 - Workspaces: <from whoami>
 - Linked project: <from status --json; or "not linked">
@@ -75,6 +82,7 @@ Execute the task end-to-end with maximum effort. Follow your system prompt:
 - CLI first, GraphQL when CLI lacks the mutation, Playwright for UI-only actions
 - Respect every Railway gotcha (cite vault files when they apply)
 - Verify after every mutation
+- Prefer an operator-supplied Railway token; never mine legacy config credentials or initiate login/OAuth without explicit approval
 - Ask before any destructive action not explicitly pre-authorized
 - When Playwright is needed, prompt the user to sign in if not already logged in
 - Return the structured report per your system prompt Step 8

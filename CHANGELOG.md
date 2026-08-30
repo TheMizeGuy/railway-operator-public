@@ -2,6 +2,12 @@
 
 All notable changes to the `railway-operator` plugin are documented here.
 
+## Unreleased
+
+- **Authentication safety**: prefer operator-supplied Railway token variables, never print or mine
+  legacy config credentials, and never initiate CLI login or browser OAuth without explicit owner
+  approval. GraphQL examples now use the explicitly supplied environment token.
+
 ## 0.1.1
 
 - **Model policy**: removed the pinned `model: opus` from the agent frontmatter. The agent now inherits the session model — always the strongest available Claude — instead of a specific hardcoded model. All "Opus 4.6" references in prose (plugin.json, marketplace.json, README, agent body) were replaced with session-model language.

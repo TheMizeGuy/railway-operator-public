@@ -4,7 +4,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2.svg)](https://claude.com/claude-code)
 [![Model](https://img.shields.io/badge/model-session--model-blueviolet.svg)](https://www.anthropic.com/claude)
 
-A [Claude Code](https://claude.com/claude-code) plugin that dispatches an autonomous agent, running on **the session model** (always the strongest available Claude — no hardcoded model dependency), to execute any Railway infrastructure task end-to-end. The agent follows a strict escalation ladder: **CLI first**, **GraphQL API** when the CLI lacks a mutation, **Playwright** against the Railway dashboard for UI-only actions. Every mutation is verified, every known gotcha is applied automatically.
+A [Claude Code](https://claude.com/claude-code) plugin that dispatches an autonomous agent, running on **the session model** (always the strongest available Claude — no hardcoded model dependency), to execute any Railway infrastructure task end-to-end. The agent follows a strict escalation ladder: **CLI first**, **GraphQL API** when the CLI lacks a mutation, **Playwright** against the Railway dashboard for UI-only actions. Every mutation is verified, every known gotcha is applied automatically, and authentication remains under the operator's control.
 
 Current version: **0.1.1**.
 
@@ -33,7 +33,7 @@ After restart, verify with `claude plugin list` and look for `railway-operator@r
 
 ### Prerequisites
 
-- **Railway CLI** ≥ 4.36.0, installed and authenticated (`railway login`, or let the agent trigger `railway login --browserless` on first use)
+- **Railway CLI** ≥ 4.36.0, installed with authentication supplied through your approved mechanism (prefer an operator-supplied `RAILWAY_API_TOKEN` or `RAILWAY_TOKEN`; the agent will not initiate login or OAuth without explicit approval)
 - **`jq`** and **`curl`** — used for JSON parsing and the GraphQL escalation path
 - **Playwright MCP plugin** for Claude Code — needed for dashboard-only actions (webhooks, audit logs, billing, member management)
 
@@ -46,7 +46,7 @@ Neither optional integration is required — the agent works from its built-in C
 
 ## Quickstart
 
-1. Install the plugin (above) and confirm `railway` is authenticated: `railway whoami`.
+1. Install the plugin (above), provide Railway authentication through your approved mechanism, and confirm `railway whoami` succeeds without printing a token.
 2. From a project directory, say **"deploy this to Railway"** or run `/railway-op deploy this`.
 3. The `railway-op` skill gathers context (git state, project type, Railway link/auth status) and dispatches the agent with a self-contained brief.
 4. The agent plans the steps with `TodoWrite`, executes via the CLI (escalating to GraphQL or Playwright only when the CLI can't do it), and verifies every mutation by reading the resource back — never trusting an exit code alone.
@@ -185,7 +185,7 @@ The agent has broad tool access for the escalation ladder:
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Skill doesn't trigger on a Railway request | Plugin not installed, or Claude Code needs a restart after install | Run `claude plugin list` to confirm `railway-operator` is active; restart Claude Code |
-| Agent stops immediately asking about auth | Railway CLI isn't authenticated | Run `railway login` yourself, or let the agent run `railway login --browserless` and paste the code it prints |
+| Agent reports CLI auth failure | No approved Railway token is available, or the supplied token was revoked | Supply or replace a token through your approved credential workflow; the agent will not mine existing config credentials or initiate login/OAuth without explicit approval |
 | Agent falls back to Playwright when you expected the CLI to work | The CLI genuinely doesn't expose that mutation (see the escalation ladder table), or the CLI attempt hit a usage error first | Check the agent's report for which rung it used and why; a usage error (bad flag, wrong service name) is retried automatically before any escalation |
 | Playwright step fails with "not logged in" | The dashboard's browser session isn't authenticated | Sign in when prompted at the `railway.com/login` screenshot the agent shows you, then tell the agent you're ready |
 | Task reported as "not done" | The agent's pre-report gate failed a check (e.g., a mutation without a verified read-back) | Read the report's stated failing evidence — it names the exact unverified step |
